@@ -4,7 +4,7 @@ validateArgs:
   - validate
 icon: "/admin/assets/azure_openai_icon.svg"
 iconDark: "/admin/assets/azure_openai_icon.svg"
-description: "Model provider for Azure OpenAI/Foundry models using API key authentication"
+description: "Model provider for manually configured Azure OpenAI/Foundry deployments using API key authentication"
 link: "https://azure.microsoft.com/en-us/products/ai-services/openai-service"
 requiredEntitlements:
   - "OBOT_ENTERPRISE_MODEL_PROVIDERS"
@@ -19,5 +19,5 @@ requiredConfigurationParameters:
     sensitive: true
   - name: "OBOT_AZURE_MODEL_PROVIDER_DEPLOYMENTS"
     friendlyName: "Deployments"
-    description: "List of deployments (format: deployment[:usage[:dialect]]). Usage defaults to 'llm' and supports 'llm', 'reasoning-llm', 'text-embedding', or 'image-generation'. Dialect defaults to OpenAI and supports 'openai' or 'anthropic'."
+    description: "List of deployments (format: deployment[:usage[:dialect]]). Usage defaults to 'llm' and supports 'llm', 'reasoning-llm', 'text-embedding', or 'image-generation'. Dialect defaults to UnknownDialect and supports openai/OpenAIResponses, anthropic/AnthropicMessages, chat/OpenAIChatCompletions, or unknown/UnknownDialect."
     sensitive: false

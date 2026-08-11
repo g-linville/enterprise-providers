@@ -17,26 +17,31 @@ func TestParseDeployments(t *testing.T) {
 		{
 			name:  "simple deployment name defaults to llm",
 			input: "gpt-4",
-			want:  map[string]azurecommon.Deployment{"gpt-4": {Usage: "llm", Dialect: azurecommon.DialectOpenAIResponses}},
+			want:  map[string]azurecommon.Deployment{"gpt-4": {Usage: "llm", Dialect: azurecommon.DialectUnknown}},
 		},
 		{
 			name:  "deployment with explicit usage type",
 			input: "my-embed:text-embedding",
-			want:  map[string]azurecommon.Deployment{"my-embed": {Usage: "text-embedding", Dialect: azurecommon.DialectOpenAIResponses}},
+			want:  map[string]azurecommon.Deployment{"my-embed": {Usage: "text-embedding", Dialect: azurecommon.DialectUnknown}},
 		},
 		{
 			name:  "reasoning-llm usage type",
 			input: "my-o3:reasoning-llm",
-			want:  map[string]azurecommon.Deployment{"my-o3": {Usage: "reasoning-llm", Dialect: azurecommon.DialectOpenAIResponses}},
+			want:  map[string]azurecommon.Deployment{"my-o3": {Usage: "reasoning-llm", Dialect: azurecommon.DialectUnknown}},
 		},
 		{
 			name:  "image-generation usage type",
 			input: "my-dalle:image-generation",
-			want:  map[string]azurecommon.Deployment{"my-dalle": {Usage: "image-generation", Dialect: azurecommon.DialectOpenAIResponses}},
+			want:  map[string]azurecommon.Deployment{"my-dalle": {Usage: "image-generation", Dialect: azurecommon.DialectUnknown}},
 		},
 		{
 			name:  "explicit OpenAI dialect",
 			input: "gpt-4:llm:openai",
+			want:  map[string]azurecommon.Deployment{"gpt-4": {Usage: "llm", Dialect: azurecommon.DialectOpenAIResponses}},
+		},
+		{
+			name:  "explicit canonical OpenAI Responses dialect",
+			input: "gpt-4:llm:OpenAIResponses",
 			want:  map[string]azurecommon.Deployment{"gpt-4": {Usage: "llm", Dialect: azurecommon.DialectOpenAIResponses}},
 		},
 		{
@@ -45,27 +50,52 @@ func TestParseDeployments(t *testing.T) {
 			want:  map[string]azurecommon.Deployment{"claude": {Usage: "llm", Dialect: azurecommon.DialectAnthropicMessages}},
 		},
 		{
+			name:  "explicit canonical Anthropic Messages dialect",
+			input: "claude:llm:AnthropicMessages",
+			want:  map[string]azurecommon.Deployment{"claude": {Usage: "llm", Dialect: azurecommon.DialectAnthropicMessages}},
+		},
+		{
+			name:  "explicit chat dialect alias",
+			input: "gpt-4:llm:chat",
+			want:  map[string]azurecommon.Deployment{"gpt-4": {Usage: "llm", Dialect: azurecommon.DialectOpenAIChatCompletions}},
+		},
+		{
+			name:  "explicit canonical chat dialect",
+			input: "gpt-4:llm:OpenAIChatCompletions",
+			want:  map[string]azurecommon.Deployment{"gpt-4": {Usage: "llm", Dialect: azurecommon.DialectOpenAIChatCompletions}},
+		},
+		{
+			name:  "explicit unknown dialect alias",
+			input: "custom:llm:unknown",
+			want:  map[string]azurecommon.Deployment{"custom": {Usage: "llm", Dialect: azurecommon.DialectUnknown}},
+		},
+		{
+			name:  "explicit canonical unknown dialect",
+			input: "custom:llm:UnknownDialect",
+			want:  map[string]azurecommon.Deployment{"custom": {Usage: "llm", Dialect: azurecommon.DialectUnknown}},
+		},
+		{
 			name:  "two deployments of the same model",
 			input: "gpt-4.1-mini,gpt-4.1-mini-2",
 			want: map[string]azurecommon.Deployment{
-				"gpt-4.1-mini":   {Usage: "llm", Dialect: azurecommon.DialectOpenAIResponses},
-				"gpt-4.1-mini-2": {Usage: "llm", Dialect: azurecommon.DialectOpenAIResponses},
+				"gpt-4.1-mini":   {Usage: "llm", Dialect: azurecommon.DialectUnknown},
+				"gpt-4.1-mini-2": {Usage: "llm", Dialect: azurecommon.DialectUnknown},
 			},
 		},
 		{
 			name:  "multiple mixed specs",
 			input: "gpt-4,my-embed:text-embedding",
 			want: map[string]azurecommon.Deployment{
-				"gpt-4":    {Usage: "llm", Dialect: azurecommon.DialectOpenAIResponses},
-				"my-embed": {Usage: "text-embedding", Dialect: azurecommon.DialectOpenAIResponses},
+				"gpt-4":    {Usage: "llm", Dialect: azurecommon.DialectUnknown},
+				"my-embed": {Usage: "text-embedding", Dialect: azurecommon.DialectUnknown},
 			},
 		},
 		{
 			name:  "whitespace trimmed",
 			input: " gpt-4 , gpt-3.5-turbo ",
 			want: map[string]azurecommon.Deployment{
-				"gpt-4":         {Usage: "llm", Dialect: azurecommon.DialectOpenAIResponses},
-				"gpt-3.5-turbo": {Usage: "llm", Dialect: azurecommon.DialectOpenAIResponses},
+				"gpt-4":         {Usage: "llm", Dialect: azurecommon.DialectUnknown},
+				"gpt-3.5-turbo": {Usage: "llm", Dialect: azurecommon.DialectUnknown},
 			},
 		},
 		{
@@ -112,8 +142,8 @@ func TestParseDeployments(t *testing.T) {
 			name:  "skips empty comma-separated entries",
 			input: "gpt-4,,gpt-3.5-turbo",
 			want: map[string]azurecommon.Deployment{
-				"gpt-4":         {Usage: "llm", Dialect: azurecommon.DialectOpenAIResponses},
-				"gpt-3.5-turbo": {Usage: "llm", Dialect: azurecommon.DialectOpenAIResponses},
+				"gpt-4":         {Usage: "llm", Dialect: azurecommon.DialectUnknown},
+				"gpt-3.5-turbo": {Usage: "llm", Dialect: azurecommon.DialectUnknown},
 			},
 		},
 	}
@@ -166,8 +196,8 @@ func TestDeploymentUsageType(t *testing.T) {
 }
 
 func TestParseDeploymentsInvalidDialectError(t *testing.T) {
-	_, err := parseDeployments("my-deploy:llm:responses")
-	if err == nil || !strings.Contains(err.Error(), `dialect "responses" must be one of: openai, anthropic`) {
+	_, err := parseDeployments("my-deploy:llm:unsupported")
+	if err == nil || !strings.Contains(err.Error(), `dialect "unsupported" must be one of: openai/OpenAIResponses, anthropic/AnthropicMessages, chat/OpenAIChatCompletions, unknown/UnknownDialect`) {
 		t.Fatalf("error = %v, want clear supported-dialects error", err)
 	}
 }

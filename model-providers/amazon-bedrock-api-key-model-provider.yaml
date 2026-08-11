@@ -3,7 +3,7 @@ command: "amazon-bedrock-api-key-model-provider/bin/obot-provider"
 validateArgs:
   - validate
 icon: "/admin/assets/amazon-bedrock.png"
-description: "Model provider for Amazon Bedrock models using API key authentication"
+description: "Model provider for all Amazon Bedrock Mantle LLM models using API key authentication, with automatic dialect discovery for unrecognized publishers"
 link: "https://aws.amazon.com/bedrock/"
 requiredEntitlements:
   - "OBOT_ENTERPRISE_MODEL_PROVIDERS"

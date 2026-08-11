@@ -22,6 +22,7 @@ const (
 	defaultTimeout = 30 * time.Second
 
 	dialectAnthropicMessages = "AnthropicMessages"
+	dialectUnknown           = "UnknownDialect"
 	dialectOpenAIResponses   = "OpenAIResponses"
 	usageLLM                 = "llm"
 )
@@ -107,9 +108,6 @@ func filterMantleModels(models []Model) []Model {
 	filtered := make([]Model, 0, len(models))
 	for _, model := range models {
 		dialect := dialectForModel(model.ID)
-		if dialect == "" {
-			continue
-		}
 		if model.Object == "" {
 			model.Object = "model"
 		}
@@ -130,7 +128,7 @@ func dialectForModel(id string) string {
 	case strings.HasPrefix(id, "openai."), strings.HasPrefix(id, "google."):
 		return dialectOpenAIResponses
 	default:
-		return ""
+		return dialectUnknown
 	}
 }
 

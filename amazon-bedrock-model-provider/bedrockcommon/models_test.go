@@ -17,10 +17,12 @@ func TestFilterMantleModels(t *testing.T) {
 		{ID: "google.gemini", Object: "model"},
 		{ID: "amazon.titan", Object: "model"},
 		{ID: "meta.llama", Object: "model"},
+		{ID: "moonshotai.kimi-k2-instruct", Object: "model"},
+		{ID: "minimax.minimax-m2", Object: "model"},
 	})
 
-	if len(models) != 3 {
-		t.Fatalf("len(models) = %d, want 3", len(models))
+	if len(models) != 7 {
+		t.Fatalf("len(models) = %d, want 7", len(models))
 	}
 	assertModel(t, models[0], "anthropic.claude", dialectAnthropicMessages)
 	if models[0].Metadata["source"] != "mantle" {
@@ -28,6 +30,10 @@ func TestFilterMantleModels(t *testing.T) {
 	}
 	assertModel(t, models[1], "openai.gpt", dialectOpenAIResponses)
 	assertModel(t, models[2], "google.gemini", dialectOpenAIResponses)
+	assertModel(t, models[3], "amazon.titan", dialectUnknown)
+	assertModel(t, models[4], "meta.llama", dialectUnknown)
+	assertModel(t, models[5], "moonshotai.kimi-k2-instruct", dialectUnknown)
+	assertModel(t, models[6], "minimax.minimax-m2", dialectUnknown)
 }
 
 func TestMantleModelsURLDefaultRegion(t *testing.T) {
@@ -52,10 +58,11 @@ func TestListMantleModels(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(models) != 1 {
-		t.Fatalf("len(models) = %d, want 1", len(models))
+	if len(models) != 2 {
+		t.Fatalf("len(models) = %d, want 2", len(models))
 	}
 	assertModel(t, models[0], "anthropic.claude", dialectAnthropicMessages)
+	assertModel(t, models[1], "amazon.titan", dialectUnknown)
 }
 
 func TestListMantleModelsReturnsHTTPErrorForNon2xx(t *testing.T) {

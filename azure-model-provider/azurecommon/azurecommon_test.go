@@ -27,9 +27,15 @@ func TestDialectForModelFormat(t *testing.T) {
 		wantOK bool
 	}{
 		{format: "OpenAI", want: DialectOpenAIResponses, wantOK: true},
+		{format: "OpenAIResponses", want: DialectOpenAIResponses, wantOK: true},
 		{format: "anthropic", want: DialectAnthropicMessages, wantOK: true},
-		{format: " Meta ", wantOK: false},
-		{format: "", wantOK: false},
+		{format: "AnthropicMessages", want: DialectAnthropicMessages, wantOK: true},
+		{format: "chat", want: DialectOpenAIChatCompletions, wantOK: true},
+		{format: "OpenAIChatCompletions", want: DialectOpenAIChatCompletions, wantOK: true},
+		{format: "unknown", want: DialectUnknown, wantOK: true},
+		{format: "UnknownDialect", want: DialectUnknown, wantOK: true},
+		{format: " Meta ", want: DialectUnknown, wantOK: false},
+		{format: "", want: DialectUnknown, wantOK: false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.format, func(t *testing.T) {

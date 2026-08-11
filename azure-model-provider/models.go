@@ -18,7 +18,7 @@ var validUsageTypes = map[string]struct{}{
 
 // parseDeployments parses a comma-separated list of deployment specs.
 // Each spec is deploymentName[:usageType[:dialect]]. Usage defaults to "llm"
-// and dialect defaults to OpenAIResponses.
+// and dialect defaults to UnknownDialect.
 func parseDeployments(s string) (map[string]azurecommon.Deployment, error) {
 	deployments := make(map[string]azurecommon.Deployment)
 	for spec := range strings.SplitSeq(s, ",") {
@@ -33,7 +33,7 @@ func parseDeployments(s string) (map[string]azurecommon.Deployment, error) {
 		}
 		deployment := strings.TrimSpace(parts[0])
 		usageType := "llm"
-		dialect := azurecommon.DialectOpenAIResponses
+		dialect := azurecommon.DialectUnknown
 		if len(parts) >= 2 {
 			usageType = strings.TrimSpace(parts[1])
 			if deployment == "" || usageType == "" {
@@ -51,7 +51,7 @@ func parseDeployments(s string) (map[string]azurecommon.Deployment, error) {
 			var ok bool
 			dialect, ok = azurecommon.DialectForModelFormat(dialectName)
 			if !ok {
-				return nil, fmt.Errorf("invalid deployment spec %q: dialect %q must be one of: openai, anthropic", spec, dialectName)
+				return nil, fmt.Errorf("invalid deployment spec %q: dialect %q must be one of: openai/OpenAIResponses, anthropic/AnthropicMessages, chat/OpenAIChatCompletions, unknown/UnknownDialect", spec, dialectName)
 			}
 		}
 		deployments[deployment] = azurecommon.Deployment{Usage: usageType, Dialect: dialect}

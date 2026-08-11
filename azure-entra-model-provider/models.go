@@ -83,10 +83,7 @@ func fetchDeploymentsFromManagementURL(ctx context.Context, mgmtURL, token strin
 
 	deployments := make(map[string]azurecommon.Deployment, len(result.Value))
 	for _, d := range result.Value {
-		dialect, ok := azurecommon.DialectForModelFormat(d.Properties.Model.ProviderFormat)
-		if !ok {
-			continue
-		}
+		dialect, _ := azurecommon.DialectForModelFormat(d.Properties.Model.ProviderFormat)
 		usageName := d.Properties.Model.ModelName
 		if usageName == "" {
 			usageName = d.DeploymentName

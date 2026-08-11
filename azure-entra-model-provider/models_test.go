@@ -61,14 +61,15 @@ func TestFetchDeploymentsFromManagement(t *testing.T) {
 			},
 		},
 		{
-			name: "unknown model format is omitted",
+			name: "unknown model format uses unknown dialect",
 			response: managementDeploymentsResponse{Value: []managementDeployment{
 				{DeploymentName: "known", Properties: managementDeploymentProperties{Model: managementDeploymentModel{ProviderFormat: "OpenAI"}}},
 				{DeploymentName: "unknown", Properties: managementDeploymentProperties{Model: managementDeploymentModel{ProviderFormat: "Meta"}}},
 			}},
 			statusCode: 200,
 			want: map[string]azurecommon.Deployment{
-				"known": {Usage: "llm", Dialect: azurecommon.DialectOpenAIResponses},
+				"known":   {Usage: "llm", Dialect: azurecommon.DialectOpenAIResponses},
+				"unknown": {Usage: "llm", Dialect: azurecommon.DialectUnknown},
 			},
 		},
 		{

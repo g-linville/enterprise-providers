@@ -8,8 +8,10 @@ import (
 )
 
 const (
-	DialectOpenAIResponses   = "OpenAIResponses"
-	DialectAnthropicMessages = "AnthropicMessages"
+	DialectOpenAIResponses       = "OpenAIResponses"
+	DialectOpenAIChatCompletions = "OpenAIChatCompletions"
+	DialectAnthropicMessages     = "AnthropicMessages"
+	DialectUnknown               = "UnknownDialect"
 )
 
 type Deployment struct {
@@ -74,12 +76,16 @@ func DeploymentUsageType(name string) string {
 // DialectForModelFormat maps the ARM deployment model format to a nanobot dialect.
 func DialectForModelFormat(format string) (string, bool) {
 	switch strings.ToLower(strings.TrimSpace(format)) {
-	case "openai":
+	case "openai", "openairesponses":
 		return DialectOpenAIResponses, true
-	case "anthropic":
+	case "anthropic", "anthropicmessages":
 		return DialectAnthropicMessages, true
+	case "chat", "openaichatcompletions":
+		return DialectOpenAIChatCompletions, true
+	case "unknown", "unknowndialect":
+		return DialectUnknown, true
 	default:
-		return "", false
+		return DialectUnknown, false
 	}
 }
 
